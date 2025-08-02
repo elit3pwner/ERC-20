@@ -13,24 +13,23 @@ contract TestMyToken is Test {
 
     address bob = makeAddr("bob");
     address alice = makeAddr("alice");
+
     function setUp() public {
-    myToken = new MyToken(totalSupply, name, symbol, address(this));
-    myToken.transfer(bob, 10000);
-}
+        myToken = new MyToken(totalSupply, name, symbol, address(this));
+        myToken.transfer(bob, 10000);
+    }
 
-function testApprove() public {
+    function testApprove() public {
+        // Bob approves Alice to spend 5000 tokens
+        vm.prank(bob);
+        myToken.approve(alice, 5000);
 
-    // Bob approves Alice to spend 5000 tokens
-    vm.prank(bob);
-    myToken.approve(alice, 5000);
+        // Alice performs transferFrom from Bob to herself
+        vm.prank(alice);
+        myToken.transferFrom(bob, alice, 5000);
 
-    // Alice performs transferFrom from Bob to herself
-    vm.prank(alice);
-    myToken.transferFrom(bob, alice, 5000);
-
-    // Check token balances
-    assertEq(myToken.balanceOf(alice), 5000);
-    assertEq(myToken.balanceOf(bob), 5000);
-}
-
+        // Check token balances
+        assertEq(myToken.balanceOf(alice), 5000);
+        assertEq(myToken.balanceOf(bob), 5000);
+    }
 }
